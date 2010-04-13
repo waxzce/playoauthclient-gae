@@ -1,6 +1,6 @@
 This is a fork of the play modules oauth client http://github.com/erwan/playoauthclient working with signpost
 
 
-This fork is design for allowed google app engine use and build with siera module persistence engine
+This fork is design for allowed google app engine use and build with siena module persistence engine
 
 ATM it is not very clean&safe I will release this in a few days/weeks
