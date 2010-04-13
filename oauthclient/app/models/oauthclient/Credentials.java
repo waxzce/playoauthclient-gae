@@ -1,15 +1,17 @@
 package models.oauthclient;
 
 import play.*;
-import play.db.jpa.*;
-import play.modules.oauthclient.ICredentials;
+//import play.modules.oauthclient.ICredentials;
 
-import javax.persistence.*;
-import java.util.*;
+import siena.*;
 
-@Entity
-public class Credentials extends Model implements ICredentials {
+@Table("Credentials")
+public class Credentials extends Model {
 
+
+@Id(Generator.AUTO_INCREMENT)
+    public Long id;
+    
 	private String token;
 
 	private String secret;
@@ -30,6 +32,14 @@ public class Credentials extends Model implements ICredentials {
 
 	public String getSecret() {
 		return secret;
+	}
+	public Credentials save(){
+		if(this.id == null){
+			this.insert();
+		}else{
+			this.update();
+		}
+		return this;
 	}
 
 }

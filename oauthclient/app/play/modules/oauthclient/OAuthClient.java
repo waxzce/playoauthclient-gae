@@ -2,9 +2,13 @@ package play.modules.oauthclient;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import java.net.HttpURLConnection;
+
 import play.Logger;
 import play.libs.WS.WSRequest;
 import play.mvc.results.Redirect;
+import models.oauthclient.*;
 
 public class OAuthClient {
 
@@ -14,7 +18,7 @@ public class OAuthClient {
 	private String consumerKey;
 	private String consumerSecret;
 
-	private WSOAuthConsumer consumer;
+	private DefaultOAuthConsumer consumer;
 	private OAuthProvider provider;
 
 	public OAuthClient(String requestURL, String accessURL, String authorizeURL, String consumerKey, String consumerSecret) {
@@ -25,9 +29,9 @@ public class OAuthClient {
 		this.consumerSecret = consumerSecret;
 	}
 
-	public WSOAuthConsumer getConsumer(ICredentials cred) {
+	public DefaultOAuthConsumer getConsumer(Credentials cred) {
 		if (consumer == null) {
-			consumer = new WSOAuthConsumer(
+			consumer = new DefaultOAuthConsumer(
 				consumerKey,
 				consumerSecret);
 			consumer.setTokenWithSecret(cred.getToken(), cred.getSecret());
@@ -48,18 +52,18 @@ public class OAuthClient {
 
 	// Authentication
 
-	public void authenticate(ICredentials cred, String callbackURL) throws Exception {
+	public void authenticate(Credentials cred, String callbackURL) throws Exception {
 		throw new Redirect(retrieveRequestToken(cred, callbackURL));
 	}
 
 	/**
 	 * Retrieve the request token, and store it in user.
 	 * to in order to get the token.
-	 * @param cred the ICredentials where the oauth token and oauth secret will be set.
+	 * @param cred the Credentials where the oauth token and oauth secret will be set.
 	 * @param callbackURL: the URL the user should be redirected after he grants the rights to our app
 	 * @return the URL on the provider's site that we should redirect the user
 	 */
-	public String retrieveRequestToken(ICredentials cred, String callbackURL) throws Exception {
+	public String retrieveRequestToken(Credentials cred, String callbackURL) throws Exception {
 		Logger.info("Consumer key: " + getConsumer(cred).getConsumerKey());
 		Logger.info("Consumer secret: " + getConsumer(cred).getConsumerSecret());
 		Logger.info("Token before request: " + getConsumer(cred).getToken());
@@ -73,12 +77,12 @@ public class OAuthClient {
 	/**
 	 * Retrieve the access token, and store it in user.
 	 * to in order to get the token.
-	 * @param user the ICredentials with the request token and secret already set (using retrieveRequestToken).
+	 * @param user the Credentials with the request token and secret already set (using retrieveRequestToken).
 	 * The access token and secret will be set these.
 	 * @return the URL on the provider's site that we should redirect the user
 	 * @see retrieveRequestToken
 	 */
-	public void retrieveAccessToken(ICredentials user, String verifier) throws Exception {
+	public void retrieveAccessToken(Credentials user, String verifier) throws Exception {
 		Logger.info("Token before retrieve: " + getConsumer(user).getToken());
 		Logger.info("Verifier: " + verifier);
 		getProvider().retrieveAccessToken(getConsumer(user), verifier);
@@ -96,12 +100,12 @@ public class OAuthClient {
 	 * @throws OAuthExpectationFailedException
 	 * @throws OAuthCommunicationException
 	 */
-	public String sign(ICredentials user, String url) throws Exception {
+	public String sign(Credentials user, String url) throws Exception {
 		return getConsumer(user).sign(url);
 	}
-
-	public WSRequest sign(ICredentials user, WSRequest request, String method) throws Exception {
-		return getConsumer(user).sign(request, method);
+/*
+	public HttpURLConnection sign(Credentials user, HttpURLConnection request) throws Exception {
+		return getConsumer(user).sign(HttpURLConnection);
 	}
-
+*/
 }
